@@ -1,4 +1,5 @@
 import random
+import xlsxwriter
 
 vornamen = [
     "Max", "Anna", "Paul", "Lena", "Felix", "Sophie", "David", "Emma", "Luca", "Mia",
@@ -73,10 +74,17 @@ nachnamen = [
     "Jackson", "Bryant", "Daniels", "Ramos", "Jenkins", "Ramirez", "Wright", "Watson", "Wagner", "Hernandez"
 ]
 
+workbook = xlsxwriter.Workbook("testMappe.xlsx")
+worksheet1 = workbook.add_worksheet("Datenbank_test")
+header_format = workbook.add_format()
+header_format.set_bold()
+worksheet1.set_column(0, 0, 35), worksheet1.set_column(1, 1, 15), worksheet1.set_column(2, 2, 15), worksheet1.set_column(3, 3, 15), worksheet1.set_column(4, 4, 20), worksheet1.set_column(5, 5, 10), worksheet1.set_column(6, 6, 15), worksheet1.set_column(7, 7, 30)
 
+worksheet1.write("A1", "E-Mail"), worksheet1.write("B1", "Passwort"), worksheet1.write("C1", "Vorname"), worksheet1.write("D1", "Nachname"), worksheet1.write("E1", "Strasse"), worksheet1.write("F1", "Postcode"), worksheet1.write("G1", "Geb-Datum"), worksheet1.write("H1", "I-BAN")
 
 erg = ""
 name = ""
+line = 2
 
 stuck = int(input("Wie viele Datensätze werden benötigt ? -> "))
 pw_len = int(input("Wie land soll das random Passwort sein ? -> "))
@@ -157,30 +165,20 @@ def gen_iban():
 while stuck >= 1:
     pw_temp = 0
 
-    var_vorname = random.randint(0, len(vornamen))
-    var_nachname = random.randint(0, len(nachnamen))
+    var_vorname = random.randint(0, len(vornamen)-1)
+    var_nachname = random.randint(0, len(nachnamen)-1)
+
+    worksheet1.write(f"A{line}", f"{vornamen[var_vorname]}.{nachnamen[var_nachname]}@test-mail.de")
+    worksheet1.write(f"B{line}", f"{gen_pw(pw_len)}")
+    worksheet1.write(f"C{line}", f"{vornamen[var_vorname]}")
+    worksheet1.write(f"D{line}", f"{nachnamen[var_nachname]}")
+    worksheet1.write(f"E{line}", f"{gen_street()}")
+    worksheet1.write(f"F{line}", f"{gen_postcode()}")
+    worksheet1.write(f"G{line}", f"{gen_birth()}")
+    worksheet1.write(f"H{line}", f"{gen_iban()}")
 
 
-    erg += f"{vornamen[var_vorname]}.{nachnamen[var_nachname]}@test-mail.de"
-    erg += " | "
-    erg += gen_pw(pw_len)
-    erg += " | "
-    erg += vornamen[var_vorname]
-    erg += " | "
-    erg += nachnamen[var_nachname]
-    erg += " | "
-    erg += gen_street()
-    erg += " | "
-    erg += gen_postcode()
-    erg += " | "
-    erg += gen_birth()
-    erg += " | "
-    erg += gen_iban()
-    erg += " | "
-    erg += "\n"
-
-
+    line += 1
     stuck -= 1
 
-print("\n")
-print(erg)
+workbook.close()
